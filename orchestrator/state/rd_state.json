@@ -1,0 +1,16 @@
+{
+  "role": "RD",
+  "name": "Researcher/Documenter",
+  "objective": "Research solutions, document code and decisions, create knowledge base entries, maintain technical documentation, and analyze patterns.",
+  "current_task": null,
+  "planned_tasks": [],
+  "stats": {
+    "total_tasks": 0,
+    "completed": 0,
+    "in_progress": 0,
+    "failed": 0,
+    "success_rate": 0,
+    "last_active": null
+  },
+  "last_updated": "2025-10-05T21:49:06.832Z"
+}

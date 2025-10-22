@@ -1,0 +1,16 @@
+{
+  "role": "PP",
+  "name": "Product Manager",
+  "objective": "Plan and define development tasks, break down complex features into actionable steps, prioritize work, and maintain project roadmap.",
+  "current_task": null,
+  "planned_tasks": [],
+  "stats": {
+    "total_tasks": 0,
+    "completed": 0,
+    "in_progress": 0,
+    "failed": 0,
+    "success_rate": 0,
+    "last_active": null
+  },
+  "last_updated": "2025-10-22T00:15:14.014Z"
+}

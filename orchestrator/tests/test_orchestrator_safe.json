@@ -1,0 +1,22 @@
+{
+  "task_id": "safe-test-documentation-2025-10-07",
+  "goal": "Add comprehensive documentation and comments to test_session_memory.sh script",
+  "acceptance": [
+    "Add header comment block explaining the script's purpose",
+    "Add inline comments for each test section",
+    "Document expected behavior and outcomes",
+    "Explain the significance of each test",
+    "Add usage examples in comments"
+  ],
+  "context_paths": [
+    "test_session_memory.sh"
+  ],
+  "constraints": {
+    "preserve_functionality": true,
+    "files_allowed": [
+      "test_session_memory.sh"
+    ],
+    "no_model_code": true,
+    "no_training_code": true
+  }
+}

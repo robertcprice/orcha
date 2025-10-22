@@ -1,0 +1,46 @@
+{
+  "hooks": {
+    "user_prompt_submit": [
+      {
+        "name": "Send to Observability Server",
+        "cmd": ".claude/hooks/send_event.py --source-app orchestration-system --event-type UserPromptSubmit",
+        "always_run": true
+      }
+    ],
+    "pre_tool_use": [
+      {
+        "name": "Send to Observability Server",
+        "cmd": ".claude/hooks/send_event.py --source-app orchestration-system --event-type PreToolUse",
+        "always_run": true
+      }
+    ],
+    "post_tool_use": [
+      {
+        "name": "Send to Observability Server",
+        "cmd": ".claude/hooks/send_event.py --source-app orchestration-system --event-type PostToolUse",
+        "always_run": true
+      }
+    ],
+    "session_start": [
+      {
+        "name": "Send to Observability Server",
+        "cmd": ".claude/hooks/send_event.py --source-app orchestration-system --event-type SessionStart",
+        "always_run": true
+      }
+    ],
+    "session_end": [
+      {
+        "name": "Send to Observability Server",
+        "cmd": ".claude/hooks/send_event.py --source-app orchestration-system --event-type SessionEnd",
+        "always_run": true
+      }
+    ],
+    "notification": [
+      {
+        "name": "Send to Observability Server",
+        "cmd": ".claude/hooks/send_event.py --source-app orchestration-system --event-type Notification",
+        "always_run": true
+      }
+    ]
+  }
+}

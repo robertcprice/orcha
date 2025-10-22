@@ -1,0 +1,16 @@
+{
+  "role": "IM",
+  "name": "Implementer",
+  "objective": "Write and modify code, implement features, fix bugs, refactor existing code, and execute development tasks efficiently.",
+  "current_task": null,
+  "planned_tasks": [],
+  "stats": {
+    "total_tasks": 0,
+    "completed": 0,
+    "in_progress": 0,
+    "failed": 0,
+    "success_rate": 0,
+    "last_active": null
+  },
+  "last_updated": "2025-10-22T00:15:14.014Z"
+}

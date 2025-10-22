@@ -1,0 +1,18 @@
+# Task Queue Directory
+
+This directory holds pending and active task files for the automated agent system.
+
+## Directory Structure
+
+```
+tasks/
+├── pending/       # New tasks waiting to be processed
+├── active/        # Tasks currently being processed
+├── completed/     # Successfully completed tasks
+├── failed/        # Failed tasks with error logs
+└── archived/      # Old tasks (auto-archived after 30 days)
+```
+
+## Task File Format
+
+See `task_schema.json` for the complete task file specification.

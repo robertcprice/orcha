@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Cyberpunk Orchestration Theme */
+    --color-background: #000000;
+    --color-background-elevated: #0a0a0a;
+    --color-foreground: #e0e7ff;
+    --color-primary: #00ff9f;
+    --color-primary-glow: #00ff9f80;
+    --color-secondary: transparent;
+    --color-accent: #00d4ff;
+    --color-accent-glow: #00d4ff80;
+    --color-success: #00ff9f;
+    --color-warning: #ffb800;
+    --color-error: #ff0055;
+    --color-border: #00ff9f;
+    --color-border-glow: #00ff9f40;
+    --color-muted: transparent;
+    --color-muted-foreground: #8892b0;
+
+    /* Glow intensity for text */
+    --text-glow-sm: 0 0 5px var(--color-primary-glow);
+    --text-glow-md: 0 0 10px var(--color-primary-glow), 0 0 20px var(--color-primary-glow);
+    --text-glow-lg: 0 0 10px var(--color-primary-glow), 0 0 20px var(--color-primary-glow), 0 0 30px var(--color-primary-glow);
+
+    /* Grid */
+    --grid-color: rgba(0, 255, 159, 0.15);
+    --grid-size: 30px;
+
+    /* Font */
+    font-family: 'Rajdhani', 'Share Tech Mono', monospace;
+  }
+
+  * {
+    border-color: var(--color-border);
+  }
+
+  body {
+    background-color: #000000;
+    color: var(--color-foreground);
+    font-family: 'Rajdhani', 'Share Tech Mono', monospace;
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
+  /* Ensure all text elements inherit color */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label {
+    color: inherit;
+    transition: color 0.2s ease;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 255, 159, 0.5);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 255, 159, 0.7);
+  }
+
+  /* Gradient utilities */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  }
+}
+
+/* Glass/Wireframe Panels */
+.glass-panel {
+  background: transparent;
+  backdrop-filter: none;
+  border: 1px solid var(--color-border);
+}
+
+.glass-button {
+  background: transparent;
+  backdrop-filter: none;
+  border: 1px solid var(--color-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(0, 255, 159, 0.05);
+  box-shadow: 0 0 10px var(--color-primary-glow);
+  transform: translateY(-2px);
+}
+
+/* Hollow wireframe panels */
+.bg-secondary\/30,
+.bg-secondary\/50,
+.bg-background\/30,
+.bg-background\/50 {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: none !important;
+}
+
+/* Header nav buttons */
+.header-nav-button {
+  background: transparent !important;
+  border: 1px solid var(--color-border) !important;
+  transition: all 0.3s ease !important;
+}
+
+.header-nav-button:hover {
+  background: rgba(0, 255, 159, 0.05) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 10px var(--color-primary-glow) !important;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Glow effects */
+.glow-text {
+  text-shadow: var(--text-glow-sm);
+}
+
+.glow-border {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 10px var(--color-primary-glow);
+}

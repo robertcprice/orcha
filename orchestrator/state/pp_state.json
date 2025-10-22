@@ -1,0 +1,38 @@
+{
+  "role": "PP",
+  "name": "Product Manager",
+  "objective": "Plan and define development tasks, break down complex features into actionable steps, prioritize work, and maintain project roadmap.",
+  "current_task": "Planning sprint 5 features and breaking down user stories into implementable tasks",
+  "planned_tasks": [
+    {
+      "id": "task_001",
+      "description": "Define requirements for agent state persistence system",
+      "status": "completed",
+      "created_at": "2025-10-05T20:00:00Z",
+      "updated_at": "2025-10-05T21:00:00Z"
+    },
+    {
+      "id": "task_002",
+      "description": "Create roadmap for enhanced agent monitoring UI",
+      "status": "in_progress",
+      "created_at": "2025-10-05T21:00:00Z",
+      "updated_at": "2025-10-05T21:49:00Z"
+    },
+    {
+      "id": "task_003",
+      "description": "Design multi-agent coordination workflow",
+      "status": "pending",
+      "created_at": "2025-10-05T21:30:00Z",
+      "updated_at": "2025-10-05T21:30:00Z"
+    }
+  ],
+  "stats": {
+    "total_tasks": 3,
+    "completed": 1,
+    "in_progress": 1,
+    "failed": 0,
+    "success_rate": 33.33333333333333,
+    "last_active": "2025-10-05T21:49:31.563Z"
+  },
+  "last_updated": "2025-10-05T21:49:31.563Z"
+}

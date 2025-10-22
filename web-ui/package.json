@@ -1,0 +1,50 @@
+{
+  "name": "orchestration-system-ui",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3002",
+    "build": "next build",
+    "start": "next start -p 3002",
+    "lint": "next lint",
+    "websocket:start": "tsx server/websocket-server.ts",
+    "start:all": "bash start-all.sh"
+  },
+  "dependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/uuid": "^10.0.0",
+    "@types/ws": "^8.18.1",
+    "autoprefixer": "^10.4.16",
+    "better-sqlite3": "^12.4.1",
+    "chart.js": "^4.5.0",
+    "chartjs-plugin-annotation": "^3.1.0",
+    "clsx": "^2.0.0",
+    "date-fns": "^3.0.0",
+    "ioredis": "^5.8.0",
+    "lucide-react": "^0.300.0",
+    "next": "15.0.0",
+    "plotly.js": "^3.1.1",
+    "postcss": "^8.4.32",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.3.0",
+    "react-dom": "^18.3.1",
+    "react-markdown": "^10.1.0",
+    "react-plotly.js": "^2.6.0",
+    "recharts": "^2.15.4",
+    "redis": "^4.6.0",
+    "remark-gfm": "^4.0.1",
+    "tailwind-merge": "^2.2.0",
+    "tailwindcss": "^3.4.0",
+    "uuid": "^13.0.0",
+    "ws": "^8.18.3"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "@types/react": "^18",
+    "@types/react-dom": "^18",
+    "@types/react-plotly.js": "^2.6.3",
+    "playwright": "^1.56.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5"
+  }
+}

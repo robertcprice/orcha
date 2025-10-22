@@ -1,0 +1,126 @@
+
+> orchestration-system-ui@0.1.0 websocket:start
+> tsx server/websocket-server.ts
+
+✅ Database initialized at: /Users/bobbyprice/projects/Smart Market Solutions/Orchestration-System/web-ui/events.db
+🚀 WebSocket server running on http://localhost:4000
+📊 WebSocket endpoint: ws://localhost:4000
+📮 POST events to: http://localhost:4000/events
+📝 Saved event: PreToolUse from test-agent
+✅ New WebSocket client connected
+📝 Saved event: PreToolUse from test-agent
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+📝 Saved event: manager_started from orchestrator
+📝 Saved event: agent_spawned from agent-1
+📝 Saved event: agent_spawned from agent-2
+📝 Saved event: agent_spawned from agent-3
+📝 Saved event: agent_spawned from agent-4
+📝 Saved event: agent_spawned from agent-5
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+✅ New WebSocket client connected
+❌ WebSocket client disconnected
+✅ New WebSocket client connected
