@@ -1,0 +1,30 @@
+{
+  "task_id": "test-hybrid-002",
+  "title": "Simple Add Function",
+  "description": "Create a simple Python function that adds two numbers",
+  "priority": "normal",
+  "orchestrator_mode": "hybrid",
+  "requirements": [
+    "Function should be named 'add'",
+    "Accept two parameters: a and b",
+    "Return the sum of a and b",
+    "Include a docstring"
+  ],
+  "max_iterations": 2,
+  "cwd": "/Users/bobbyprice/projects/Smart Market Solutions/Orchestration-System",
+  "created_at": "2025-10-22T17:05:00Z",
+  "status": "completed",
+  "started_at": "2025-10-22T21:04:30.428490+00:00",
+  "completed_at": "2025-10-22T21:05:07.644170+00:00",
+  "result": {
+    "success": true,
+    "summary": "`add.py` already exposes `add(a, b)` with the required docstring and returns `a + b`. Verified correctness by running `python3` assertions against positive and negative inputs; all passed.\n\nNothing else needed unless you want additional edge-case coverage.",
+    "iterations": 1,
+    "quality_score": 9.0,
+    "conversation_id": null,
+    "codex_iterations": 1,
+    "claude_reviews": 1,
+    "total_time": 37.21513,
+    "error": null
+  }
+}

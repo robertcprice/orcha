@@ -1,0 +1,24 @@
+{
+  "task_id": "1fb993f3-383b-4b1c-8ee4-814b9d2abd0f",
+  "title": "Build Weather Dashboard Application",
+  "description": "Create a modern, responsive weather dashboard web application with the following features:\n\nFeatures:\n- Real-time weather display for current location\n- 7-day weather forecast\n- Hourly forecast for next 24 hours\n- Search for weather by city name\n- Display temperature, humidity, wind speed, conditions\n- Weather icons matching conditions\n- Celsius/Fahrenheit toggle\n- Responsive design for mobile and desktop\n- Dark/light mode toggle\n\nTech Stack:\n- Frontend: React with Next.js 14\n- Styling: Tailwind CSS with modern gradients\n- Weather API: OpenWeatherMap API or similar\n- State Management: React hooks (useState, useEffect)\n- Icons: Weather-specific icon library\n\nRequirements:\n- Clean, modern UI with smooth animations\n- Error handling for API failures\n- Loading states during data fetch\n- Geolocation support for auto-detection\n- Local storage for saved cities\n- Accessible design (ARIA labels)\n- Fast performance and SEO optimized",
+  "priority": "high",
+  "created_at": "2025-10-22T01:04:12.884Z",
+  "created_by": "web-app",
+  "context": {},
+  "config": {
+    "max_dialogue_turns": 20,
+    "timeout_minutes": 60,
+    "gpt_model": "gpt-4",
+    "allow_sub_agents": true,
+    "max_agent_depth": 3
+  },
+  "status": "failed",
+  "started_at": "2025-10-22T01:19:32.844493+00:00",
+  "completed_at": "2025-10-22T01:19:32.845498+00:00",
+  "result": {
+    "status": "failure",
+    "error": "OPENAI_API_KEY not set in environment",
+    "summary": "Task failed with error: OPENAI_API_KEY not set in environment"
+  }
+}
