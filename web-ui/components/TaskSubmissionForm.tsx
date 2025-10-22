@@ -14,6 +14,7 @@ export default function TaskSubmissionForm() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState("normal");
+  const [orchestratorMode, setOrchestratorMode] = useState("hybrid");
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<TaskSubmissionResult | null>(null);
 
@@ -41,6 +42,7 @@ export default function TaskSubmissionForm() {
           title,
           description,
           priority,
+          orchestrator_mode: orchestratorMode,
           config: {
             enable_validation: true,
             max_retries: 3,
@@ -61,6 +63,7 @@ export default function TaskSubmissionForm() {
         setTitle("");
         setDescription("");
         setPriority("normal");
+        setOrchestratorMode("hybrid");
       } else {
         setResult({
           success: false,
@@ -128,6 +131,25 @@ export default function TaskSubmissionForm() {
             <option value="high">High</option>
             <option value="critical">Critical</option>
           </select>
+        </div>
+
+        {/* Orchestrator Mode */}
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">
+            Orchestrator Mode
+          </label>
+          <select
+            value={orchestratorMode}
+            onChange={(e) => setOrchestratorMode(e.target.value)}
+            className="w-full px-3 py-2 bg-gray-800/50 border border-gray-700 rounded-lg text-gray-200 focus:outline-none focus:border-blue-500"
+            disabled={submitting}
+          >
+            <option value="hybrid">Hybrid (Codex + Claude Code)</option>
+            <option value="auto">Auto (GPT-4 Orchestrator)</option>
+          </select>
+          <p className="mt-1 text-xs text-gray-400">
+            Hybrid mode uses Codex for implementation and Claude Code for review (recommended)
+          </p>
         </div>
 
         {/* Submit Button */}
