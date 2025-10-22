@@ -19,9 +19,21 @@ export interface FilterOptions {
   hook_event_types: string[];
 }
 
-let db: Database.Database;
+let db: Database.Database | null = null;
+
+function ensureDatabase(): Database.Database {
+  if (!db) {
+    initDatabase();
+  }
+  return db!;
+}
 
 export function initDatabase(): void {
+  if (db) {
+    console.log('⚠️  Database already initialized');
+    return;
+  }
+
   const dbPath = path.join(process.cwd(), 'events.db');
   db = new Database(dbPath);
 
@@ -54,7 +66,8 @@ export function initDatabase(): void {
 }
 
 export function insertEvent(event: HookEvent): HookEvent {
-  const stmt = db.prepare(`
+  const database = ensureDatabase();
+  const stmt = database.prepare(`
     INSERT INTO events (source_app, session_id, hook_event_type, payload, chat, summary, timestamp, model_name)
     VALUES (?, ?, ?, ?, ?, ?, ?, ?)
   `);
@@ -80,9 +93,10 @@ export function insertEvent(event: HookEvent): HookEvent {
 }
 
 export function getFilterOptions(): FilterOptions {
-  const sourceApps = db.prepare('SELECT DISTINCT source_app FROM events ORDER BY source_app').all() as { source_app: string }[];
-  const sessionIds = db.prepare('SELECT DISTINCT session_id FROM events ORDER BY session_id DESC LIMIT 100').all() as { session_id: string }[];
-  const hookEventTypes = db.prepare('SELECT DISTINCT hook_event_type FROM events ORDER BY hook_event_type').all() as { hook_event_type: string }[];
+  const database = ensureDatabase();
+  const sourceApps = database.prepare('SELECT DISTINCT source_app FROM events ORDER BY source_app').all() as { source_app: string }[];
+  const sessionIds = database.prepare('SELECT DISTINCT session_id FROM events ORDER BY session_id DESC LIMIT 100').all() as { session_id: string }[];
+  const hookEventTypes = database.prepare('SELECT DISTINCT hook_event_type FROM events ORDER BY hook_event_type').all() as { hook_event_type: string }[];
 
   return {
     source_apps: sourceApps.map(row => row.source_app),
@@ -92,7 +106,8 @@ export function getFilterOptions(): FilterOptions {
 }
 
 export function getRecentEvents(limit: number = 100): HookEvent[] {
-  const stmt = db.prepare(`
+  const database = ensureDatabase();
+  const stmt = database.prepare(`
     SELECT id, source_app, session_id, hook_event_type, payload, chat, summary, timestamp, model_name
     FROM events
     ORDER BY timestamp DESC
@@ -114,8 +129,34 @@ export function getRecentEvents(limit: number = 100): HookEvent[] {
   })).reverse();
 }
 
+export function getEventsBySession(sessionId: string, limit: number = 100): HookEvent[] {
+  const database = ensureDatabase();
+  const stmt = database.prepare(`
+    SELECT id, source_app, session_id, hook_event_type, payload, chat, summary, timestamp, model_name
+    FROM events
+    WHERE session_id = ?
+    ORDER BY timestamp DESC
+    LIMIT ?
+  `);
+
+  const rows = stmt.all(sessionId, limit) as any[];
+
+  return rows.map(row => ({
+    id: row.id,
+    source_app: row.source_app,
+    session_id: row.session_id,
+    hook_event_type: row.hook_event_type,
+    payload: JSON.parse(row.payload),
+    chat: row.chat ? JSON.parse(row.chat) : undefined,
+    summary: row.summary || undefined,
+    timestamp: row.timestamp,
+    model_name: row.model_name || undefined
+  })).reverse();
+}
+
 export function clearAllEvents(): void {
-  db.exec('DELETE FROM events');
+  const database = ensureDatabase();
+  database.exec('DELETE FROM events');
   console.log('✅ All events cleared from database');
 }
 

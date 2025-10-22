@@ -2,11 +2,16 @@ import fs from 'fs';
 import path from 'path';
 
 export interface Project {
+  id: string;
   name: string;
+  description?: string;
+  created: string;
+  updated: string;
   path: string;
   hasObsidianVault: boolean;
   vaultPath?: string;
   lastModified: number;
+  isCurrent?: boolean;
 }
 
 export interface VaultFile {
@@ -19,6 +24,15 @@ export interface VaultFile {
 
 // Base directory to scan for projects
 const PROJECTS_BASE_PATH = '/Users/bobbyprice/projects/Smart Market Solutions';
+
+// Orchestration System projects directory
+const getOrchestratorProjectsPath = () => {
+  return path.join(PROJECTS_BASE_PATH, 'Orchestration-System', 'projects');
+};
+
+const getCurrentProjectPath = () => {
+  return path.join(PROJECTS_BASE_PATH, 'Orchestration-System', 'current-project.txt');
+};
 
 /**
  * Discover all projects in the base directory
@@ -222,6 +236,191 @@ export function getMindMapData(vaultPath: string): any {
   } catch (error) {
 
     console.error('Error generating mind map:', error);
-    return { nodes: [], edges: [] };
+    return { nodes, edges: [] };
   }
+}
+
+/**
+ * List orchestrator projects
+ */
+export function listOrchestratorProjects(): Project[] {
+  const projectsPath = getOrchestratorProjectsPath();
+  const projects: Project[] = [];
+
+  try {
+    if (!fs.existsSync(projectsPath)) {
+      return [];
+    }
+
+    const currentProjectId = getCurrentProject();
+    const entries = fs.readdirSync(projectsPath, { withFileTypes: true });
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+
+      const projectPath = path.join(projectsPath, entry.name);
+      const metadataPath = path.join(projectPath, 'metadata.json');
+
+      try {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
+        const vaultPath = path.join(projectPath, 'obsidian-vault');
+        const stats = fs.statSync(projectPath);
+
+        projects.push({
+          id: entry.name,
+          ...metadata,
+          path: projectPath,
+          hasObsidianVault: fs.existsSync(vaultPath),
+          vaultPath: fs.existsSync(vaultPath) ? vaultPath : undefined,
+          lastModified: stats.mtimeMs,
+          isCurrent: entry.name === currentProjectId,
+        });
+      } catch (error) {
+        console.error(`Failed to read project ${entry.name}:`, error);
+      }
+    }
+  } catch (error) {
+    console.error('Error listing orchestrator projects:', error);
+  }
+
+  return projects.sort((a, b) => b.lastModified - a.lastModified);
+}
+
+/**
+ * Create a new orchestrator project
+ */
+export function createOrchestratorProject(name: string, description?: string): Project {
+  const projectsPath = getOrchestratorProjectsPath();
+
+  // Ensure projects directory exists
+  if (!fs.existsSync(projectsPath)) {
+    fs.mkdirSync(projectsPath, { recursive: true });
+  }
+
+  // Create project ID (slugify)
+  const projectId = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+  const projectPath = path.join(projectsPath, projectId);
+
+  if (fs.existsSync(projectPath)) {
+    throw new Error('Project already exists');
+  }
+
+  // Create project structure
+  fs.mkdirSync(projectPath, { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'tasks', 'pending'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'tasks', 'active'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'tasks', 'completed'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'tasks', 'failed'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'tasks', 'archived'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'obsidian-vault'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'state'), { recursive: true });
+  fs.mkdirSync(path.join(projectPath, 'outputs'), { recursive: true });
+
+  // Create metadata
+  const metadata = {
+    name,
+    description: description || '',
+    created: new Date().toISOString(),
+    updated: new Date().toISOString(),
+  };
+
+  fs.writeFileSync(
+    path.join(projectPath, 'metadata.json'),
+    JSON.stringify(metadata, null, 2)
+  );
+
+  // Create initial state
+  const initialState = {
+    projectId,
+    created: new Date().toISOString(),
+    tasks: { pending: 0, active: 0, completed: 0, failed: 0 },
+  };
+
+  fs.writeFileSync(
+    path.join(projectPath, 'state', 'current.json'),
+    JSON.stringify(initialState, null, 2)
+  );
+
+  // Create README in obsidian vault
+  const readme = `# ${name}\n\n${description || 'Project workspace for orchestration tasks.'}\n\nCreated: ${new Date().toLocaleString()}\n`;
+  fs.writeFileSync(
+    path.join(projectPath, 'obsidian-vault', 'README.md'),
+    readme
+  );
+
+  const vaultPath = path.join(projectPath, 'obsidian-vault');
+  const stats = fs.statSync(projectPath);
+
+  return {
+    id: projectId,
+    ...metadata,
+    path: projectPath,
+    hasObsidianVault: true,
+    vaultPath,
+    lastModified: stats.mtimeMs,
+  };
+}
+
+/**
+ * Delete an orchestrator project
+ */
+export function deleteOrchestratorProject(projectId: string): void {
+  const currentProjectId = getCurrentProject();
+
+  if (currentProjectId === projectId) {
+    throw new Error('Cannot delete the current project. Switch to another project first.');
+  }
+
+  const projectsPath = getOrchestratorProjectsPath();
+  const projectPath = path.join(projectsPath, projectId);
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error('Project not found');
+  }
+
+  fs.rmSync(projectPath, { recursive: true, force: true });
+}
+
+/**
+ * Get current project ID
+ */
+export function getCurrentProject(): string | null {
+  const currentProjectPath = getCurrentProjectPath();
+
+  try {
+    if (fs.existsSync(currentProjectPath)) {
+      return fs.readFileSync(currentProjectPath, 'utf-8').trim();
+    }
+  } catch (error) {
+    console.error('Error reading current project:', error);
+  }
+
+  return null;
+}
+
+/**
+ * Set current project
+ */
+export function setCurrentProject(projectId: string): void {
+  const projectsPath = getOrchestratorProjectsPath();
+  const projectPath = path.join(projectsPath, projectId);
+
+  if (!fs.existsSync(projectPath)) {
+    throw new Error('Project not found');
+  }
+
+  const currentProjectPath = getCurrentProjectPath();
+  fs.writeFileSync(currentProjectPath, projectId);
+}
+
+/**
+ * Get orchestrator project by ID
+ */
+export function getOrchestratorProject(projectId: string): Project | null {
+  const projects = listOrchestratorProjects();
+  return projects.find(p => p.id === projectId) || null;
 }
