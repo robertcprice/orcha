@@ -2,20 +2,34 @@ import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
 import { v4 as uuidv4 } from "uuid";
+import { getCurrentProject } from "@/server/projects";
+
+const getProjectPendingDir = () => {
+  const currentProject = getCurrentProject();
+  const projectRoot = path.join(process.cwd(), "..");
+
+  if (!currentProject) {
+    // Fallback to orchestrator tasks directory
+    return path.join(projectRoot, "orchestrator", "tasks", "pending");
+  }
+
+  // Use current project's tasks directory
+  return path.join(projectRoot, "projects", currentProject, "tasks", "pending");
+};
 
 /**
  * POST /api/tasks/submit
  *
  * Submit a new task to the autonomous agent task queue.
- * Tasks are written to orchestrator/tasks/pending/ and will be
- * automatically picked up by the task monitor service.
+ * Tasks are written to the current project's tasks/pending/ directory
+ * and will be automatically picked up by the task monitor service.
  */
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
     // Validate required fields
-    const { title, description, priority = "normal" } = body;
+    const { title, description, priority = "normal", orchestrator_mode = "hybrid" } = body;
 
     if (!title || !description) {
       return NextResponse.json(
@@ -29,6 +43,15 @@ export async function POST(request: NextRequest) {
     if (!validPriorities.includes(priority)) {
       return NextResponse.json(
         { error: `Invalid priority. Must be one of: ${validPriorities.join(", ")}` },
+        { status: 400 }
+      );
+    }
+
+    // Validate orchestrator_mode
+    const validModes = ["auto", "hybrid"];
+    if (!validModes.includes(orchestrator_mode)) {
+      return NextResponse.json(
+        { error: `Invalid orchestrator_mode. Must be one of: ${validModes.join(", ")}` },
         { status: 400 }
       );
     }
@@ -51,6 +74,7 @@ export async function POST(request: NextRequest) {
       title,
       description,
       priority,
+      orchestrator_mode,
       created_at: now,
       created_by: "web-app",
       context: body.context || {},
@@ -65,8 +89,7 @@ export async function POST(request: NextRequest) {
     };
 
     // Write task file to pending directory
-    const projectRoot = path.join(process.cwd(), "..");
-    const pendingDir = path.join(projectRoot, "orchestrator", "tasks", "pending");
+    const pendingDir = getProjectPendingDir();
 
     // Ensure pending directory exists
     await fs.mkdir(pendingDir, { recursive: true });

@@ -12,6 +12,35 @@ export async function GET(request: NextRequest) {
 
       let redis;
       let subscriber;
+      let isClosed = false;
+
+      const cleanup = async () => {
+        if (isClosed) return;
+        isClosed = true;
+
+        if (subscriber) {
+          try {
+            await subscriber.unsubscribe('claude:sessions');
+            await subscriber.quit();
+          } catch (e) {
+            // Ignore cleanup errors
+          }
+        }
+
+        if (redis) {
+          try {
+            await redis.quit();
+          } catch (e) {
+            // Ignore cleanup errors
+          }
+        }
+
+        try {
+          controller.close();
+        } catch (e) {
+          // Ignore if already closed
+        }
+      };
 
       try {
 
@@ -51,17 +80,7 @@ export async function GET(request: NextRequest) {
         request.signal.addEventListener('abort', async () => {
           console.log('🔌 SSE session stream disconnected');
           clearInterval(keepaliveInterval);
-
-          if (subscriber) {
-            await subscriber.unsubscribe('claude:sessions');
-            await subscriber.quit();
-          }
-
-          if (redis) {
-            await redis.quit();
-          }
-
-          controller.close();
+          await cleanup();
         });
 
       } catch (error) {
@@ -73,9 +92,14 @@ export async function GET(request: NextRequest) {
           type: 'error',
           message: 'Failed to connect to session stream'
         });
-        controller.enqueue(encoder.encode(`data: ${errorData}\n\n`));
 
-        controller.close();
+        try {
+          controller.enqueue(encoder.encode(`data: ${errorData}\n\n`));
+        } catch (e) {
+          // Ignore if controller is closed
+        }
+
+        await cleanup();
       }
     }
   });

@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import fs from "fs/promises";
 import path from "path";
+import { getCurrentProject } from "@/server/projects";
+
+const getProjectTasksDir = () => {
+  const currentProject = getCurrentProject();
+
+  if (!currentProject) {
+    // Fallback to orchestrator tasks directory
+    const projectRoot = path.join(process.cwd(), "..");
+    return path.join(projectRoot, "orchestrator", "tasks");
+  }
+
+  // Use current project's tasks directory
+  const projectRoot = path.join(process.cwd(), "..");
+  return path.join(projectRoot, "projects", currentProject, "tasks");
+};
 
 /**
  * GET /api/tasks/status?task_id=xxx
@@ -12,19 +27,46 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const taskId = searchParams.get("task_id");
 
-    if (!taskId) {
-      return NextResponse.json(
-        { error: "Missing required parameter: task_id" },
-        { status: 400 }
-      );
-    }
-
-    // Check all task directories
-    const projectRoot = path.join(process.cwd(), "..");
-    const tasksDir = path.join(projectRoot, "orchestrator", "tasks");
-
+    const tasksDir = getProjectTasksDir();
     const directories = ["pending", "active", "completed", "failed", "archived"];
 
+    // If no task_id provided, return all tasks
+    if (!taskId) {
+      const allTasks: any[] = [];
+
+      for (const dir of directories) {
+        const dirPath = path.join(tasksDir, dir);
+
+        try {
+          const files = await fs.readdir(dirPath);
+
+          for (const file of files) {
+            if (file.endsWith('.json')) {
+              try {
+                const content = await fs.readFile(path.join(dirPath, file), 'utf-8');
+                const task = JSON.parse(content);
+                allTasks.push({
+                  ...task,
+                  status: dir,
+                  task_id: task.task_id || file.replace('.json', ''),
+                });
+              } catch {}
+            }
+          }
+        } catch {
+          // Directory doesn't exist, continue
+          continue;
+        }
+      }
+
+      return NextResponse.json({
+        ok: true,
+        tasks: allTasks,
+        count: allTasks.length,
+      });
+    }
+
+    // Get specific task by ID
     for (const dir of directories) {
       const taskFile = path.join(tasksDir, dir, `${taskId}.json`);
 
@@ -33,7 +75,7 @@ export async function GET(request: NextRequest) {
         const task = JSON.parse(content);
 
         return NextResponse.json({
-          success: true,
+          ok: true,
           task,
           location: dir,
         });
@@ -46,9 +88,9 @@ export async function GET(request: NextRequest) {
     // Task not found in any directory
     return NextResponse.json(
       {
+        ok: false,
         error: "Task not found",
         task_id: taskId,
-        message: "Task may have been deleted or does not exist",
       },
       { status: 404 }
     );
@@ -57,6 +99,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(
       {
+        ok: false,
         error: "Failed to get task status",
         details: error.message,
       },
