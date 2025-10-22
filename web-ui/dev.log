@@ -65102,3 +65102,13 @@ Failed to read project test: Error: ENOENT: no such file or directory, open '/Us
  GET /api/agents/unified-logs?limit=200 200 in 8ms
  GET /api/agents/unified-logs?limit=200 200 in 10ms
  GET /api/stats 200 in 6ms
+ GET /api/agents/unified-logs?limit=200 200 in 8ms
+ GET /api/agents/unified-logs?limit=200 200 in 8ms
+ GET /api/tasks/status 200 in 11ms
+ GET /api/agents/unified-logs?limit=200 200 in 12ms
+ GET /api/stats 200 in 14ms
+ GET /api/agents/unified-logs?limit=200 200 in 6ms
+ GET /api/agents/unified-logs?limit=200 200 in 7ms
+ GET /api/stats 200 in 8ms
+ GET /api/agents/unified-logs?limit=200 200 in 7ms
+ GET /api/agents/unified-logs?limit=200 200 in 9ms
