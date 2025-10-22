@@ -2,18 +2,16 @@
 
 import Link from "next/link";
 import { Brain, Settings } from "lucide-react";
-import PlanTracker from "@/components/PlanTracker";
 import SessionMonitor from "@/components/SessionMonitor";
 import StatsOverview from "@/components/StatsOverview";
-import LatestIteration from "@/components/LatestIteration";
 import HybridOrchestratorPanel from "@/components/HybridOrchestratorPanel";
 import DirectClaudePanel from "@/components/DirectClaudePanel";
 import UnifiedAgentTerminal from "@/components/UnifiedAgentTerminal";
-import AgentVisualization from "@/components/AgentVisualization";
 import ColorPicker from "@/components/ColorPicker";
 import LiveSessionViewer from "@/components/LiveSessionViewer";
 import ObsidianKnowledgeEnhanced from "@/components/ObsidianKnowledgeEnhanced";
 import EventTimeline from "@/components/EventTimeline";
+import ProjectManager from "@/components/ProjectManager";
 
 export default function Dashboard() {
   return (
@@ -32,6 +30,7 @@ export default function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
+            <ProjectManager />
             <Link href="/agents" className="header-nav-button flex items-center gap-2 px-4 py-2 rounded-lg">
               <Brain className="w-4 h-4 text-primary" />
               <span className="text-sm font-medium">Agents</span>
@@ -67,10 +66,7 @@ export default function Dashboard() {
 
           {/* Middle/Right Columns */}
           <div className="xl:col-span-2 space-y-6">
-            <PlanTracker />
-            <LatestIteration />
             <LiveSessionViewer />
-            <AgentVisualization />
             <EventTimeline />
             <UnifiedAgentTerminal />
             <ObsidianKnowledgeEnhanced />
