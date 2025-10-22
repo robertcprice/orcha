@@ -31,7 +31,9 @@ import shutil
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from orchestrator.auto_orchestrator import AutoOrchestrator
+# Lazy imports to avoid requiring API keys at startup
+# from orchestrator.auto_orchestrator import AutoOrchestrator  # Imported when needed
+from orchestrator.hybrid_codex_claude_mcp import run_hybrid_mcp_workflow
 
 
 # Configure logging
@@ -145,20 +147,20 @@ class TaskMonitor:
 
     async def _scan_and_process_tasks(self):
         """
-        Scan pending directory for new tasks and process them if capacity available.
+        Scan pending directories (orchestrator and all projects) for new tasks.
         """
 
         # Check if we can accept more tasks
         if len(self.active_tasks) >= self.config.max_concurrent_tasks:
             return
 
-        # Get pending task files sorted by priority and creation time
-        pending_tasks = self._get_pending_tasks()
+        # Get pending task files from all sources
+        pending_tasks = self._get_all_pending_tasks()
 
         if not pending_tasks:
             return
 
-        logger.info(f"Found {len(pending_tasks)} pending task(s)")
+        logger.info(f"Found {len(pending_tasks)} pending task(s) across all projects")
 
         # Process tasks up to concurrent limit
         slots_available = self.config.max_concurrent_tasks - len(self.active_tasks)
@@ -173,6 +175,58 @@ class TaskMonitor:
 
             if task_data:
                 await self._process_task(task_file, task_data)
+
+    def _get_all_pending_tasks(self) -> List[Path]:
+        """
+        Get pending tasks from orchestrator and all project directories.
+        """
+        all_pending = []
+
+        # Scan orchestrator tasks directory
+        orchestrator_pending = self._get_pending_tasks_from_dir(self.pending_dir)
+        all_pending.extend(orchestrator_pending)
+
+        # Scan all project task directories
+        projects_dir = PROJECT_ROOT / "projects"
+        if projects_dir.exists():
+            for project_dir in projects_dir.iterdir():
+                if project_dir.is_dir():
+                    project_pending_dir = project_dir / "tasks" / "pending"
+                    if project_pending_dir.exists():
+                        project_pending = self._get_pending_tasks_from_dir(project_pending_dir)
+                        all_pending.extend(project_pending)
+                        if project_pending:
+                            logger.info(f"Found {len(project_pending)} task(s) in project: {project_dir.name}")
+
+        # Sort all tasks by priority
+        if all_pending:
+            priority_order = {"critical": 0, "high": 1, "normal": 2, "low": 3}
+
+            def sort_key(task_file: Path):
+                try:
+                    with open(task_file, 'r') as f:
+                        data = json.load(f)
+                    priority = priority_order.get(data.get("priority", "normal"), 2)
+                    created_at = data.get("created_at", "")
+                    return (priority, created_at)
+                except Exception as e:
+                    logger.error(f"Error reading task {task_file}: {e}")
+                    return (99, "")
+
+            all_pending.sort(key=sort_key)
+
+        return all_pending
+
+    def _get_pending_tasks_from_dir(self, pending_dir: Path) -> List[Path]:
+        """Get pending tasks from a specific directory."""
+        if not pending_dir.exists():
+            return []
+
+        try:
+            return list(pending_dir.glob("*.json"))
+        except Exception as e:
+            logger.error(f"Error scanning directory {pending_dir}: {e}")
+            return []
 
     def _get_pending_tasks(self) -> List[Path]:
         """
@@ -249,8 +303,13 @@ class TaskMonitor:
         # Mark as processing
         self.processing_tasks.add(task_file.stem)
 
+        # Determine which project this task belongs to
+        task_base_dir = self._get_task_base_dir(task_file)
+        active_dir = task_base_dir / "active"
+        active_dir.mkdir(parents=True, exist_ok=True)
+
         # Move to active directory
-        active_file = self.active_dir / task_file.name
+        active_file = active_dir / task_file.name
 
         try:
             shutil.move(str(task_file), str(active_file))
@@ -268,7 +327,7 @@ class TaskMonitor:
 
         # Create and start orchestrator task
         orchestrator_task = asyncio.create_task(
-            self._run_orchestrator(active_file, task_data)
+            self._run_orchestrator(active_file, task_data, task_base_dir)
         )
 
         self.active_tasks[task_id] = orchestrator_task
@@ -279,6 +338,23 @@ class TaskMonitor:
             lambda t: self._task_completed(task_id, task_file.stem)
         )
 
+    def _get_task_base_dir(self, task_file: Path) -> Path:
+        """Determine the base tasks directory for a task file."""
+        # Check if task is in a project directory
+        try:
+            parts = task_file.parts
+            if "projects" in parts:
+                # Find project name
+                projects_idx = parts.index("projects")
+                if projects_idx + 1 < len(parts):
+                    project_name = parts[projects_idx + 1]
+                    return PROJECT_ROOT / "projects" / project_name / "tasks"
+        except:
+            pass
+
+        # Default to orchestrator tasks directory
+        return self.config.task_dir
+
     def _task_completed(self, task_id: str, file_stem: str):
         """Callback when orchestrator task completes"""
 
@@ -287,25 +363,69 @@ class TaskMonitor:
 
         logger.info(f"Task {task_id} completed")
 
-    async def _run_orchestrator(self, task_file: Path, task_data: Dict):
+    async def _run_orchestrator(self, task_file: Path, task_data: Dict, task_base_dir: Path):
         """
         Run orchestrator for a task.
+
+        Supports two modes:
+        - 'auto': Uses AutoOrchestrator (default, existing behavior)
+        - 'hybrid': Uses Codex-Claude hybrid workflow (Codex implements, Claude reviews)
         """
 
         task_id = task_data["task_id"]
         title = task_data["title"]
+        orchestrator_mode = task_data.get("orchestrator_mode", "auto")
 
-        logger.info(f"Starting orchestrator for: {title}")
+        logger.info(f"Starting orchestrator for: {title} (mode: {orchestrator_mode})")
+
+        # Get project-specific directories
+        completed_dir = task_base_dir / "completed"
+        failed_dir = task_base_dir / "failed"
+        completed_dir.mkdir(parents=True, exist_ok=True)
+        failed_dir.mkdir(parents=True, exist_ok=True)
 
         try:
-            # Create orchestrator
-            orchestrator = AutoOrchestrator(
-                project_root=PROJECT_ROOT,
-                task_data=task_data
-            )
+            # Choose orchestrator based on mode
+            if orchestrator_mode == "hybrid":
+                # Use Codex-Claude hybrid workflow
+                logger.info("Using Codex-Claude hybrid workflow")
 
-            # Execute task
-            result = await orchestrator.execute_task()
+                result = await run_hybrid_mcp_workflow(
+                    task_id=task_id,
+                    title=title,
+                    description=task_data.get("description", ""),
+                    requirements=task_data.get("requirements", []),
+                    cwd=task_data.get("cwd", str(PROJECT_ROOT)),
+                    context=task_data.get("context", {}),
+                    max_iterations=task_data.get("max_iterations", 3)
+                )
+
+                # Convert hybrid result to standard result format
+                result = {
+                    "success": result.success,
+                    "summary": result.final_output if result.success else result.error,
+                    "iterations": result.iterations,
+                    "quality_score": result.quality_score,
+                    "conversation_id": result.conversation_id,
+                    "codex_iterations": result.codex_iterations,
+                    "claude_reviews": result.claude_reviews,
+                    "total_time": result.total_time,
+                    "error": result.error
+                }
+            else:
+                # Use Auto Orchestrator (default)
+                logger.info("Using AutoOrchestrator")
+
+                # Lazy import to avoid requiring API key at startup
+                from orchestrator.auto_orchestrator import AutoOrchestrator
+
+                orchestrator = AutoOrchestrator(
+                    project_root=PROJECT_ROOT,
+                    task_data=task_data
+                )
+
+                # Execute task
+                result = await orchestrator.execute_task()
 
             # Update task with results
             task_data["status"] = "completed"
@@ -313,7 +433,7 @@ class TaskMonitor:
             task_data["result"] = result
 
             # Move to completed directory
-            completed_file = self.completed_dir / task_file.name
+            completed_file = completed_dir / task_file.name
 
             with open(completed_file, 'w') as f:
                 json.dump(task_data, f, indent=2)
@@ -339,7 +459,7 @@ class TaskMonitor:
             }
 
             # Move to failed directory
-            failed_file = self.failed_dir / task_file.name
+            failed_file = failed_dir / task_file.name
 
             with open(failed_file, 'w') as f:
                 json.dump(task_data, f, indent=2)
