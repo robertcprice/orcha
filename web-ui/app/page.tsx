@@ -425,40 +425,25 @@ export default function Home() {
     }
   }, [themeId]);
 
-  // ✅ FIX: Check Redis health on mount and auto-start if needed
+  // ✅ FIX: Check Redis health on mount - API will auto-start if needed
   useEffect(() => {
     const checkRedisHealth = async () => {
       try {
         const response = await fetch('/api/health/redis');
         const data = await response.json();
 
-        if (!data.isRunning) {
-          console.warn('⚠️ Redis is not running, attempting to start...');
-          setRedisRunning(false);
-          setRedisErrorMessage('Redis server is not running. Attempting to start...');
-          setShowRedisError(true);
-
-          // Attempt to start Redis
-          const startResponse = await fetch('/api/health/redis/start', { method: 'POST' });
-          const startData = await startResponse.json();
-
-          if (startData.success) {
-            console.log('✅ Redis started successfully');
-            setRedisRunning(true);
-            setShowRedisError(false);
-            setRedisErrorMessage('');
-          } else {
-            console.error('❌ Failed to start Redis:', startData.message);
-            setRedisRunning(false);
-            setRedisErrorMessage(
-              startData.message || 'Failed to start Redis server. Please start it manually.'
-            );
-            setShowRedisError(true);
-          }
-        } else {
-          console.log('✅ Redis is running');
+        if (data.isRunning) {
+          // Redis is running (either already was or was auto-started)
+          console.log('✅ Redis is running' + (data.autoStarted ? ' (auto-started)' : ''));
           setRedisRunning(true);
           setShowRedisError(false);
+          setRedisErrorMessage('');
+        } else {
+          // Redis failed to start
+          console.error('❌ Redis not running:', data.message);
+          setRedisRunning(false);
+          setRedisErrorMessage(data.message || 'Redis server could not be started');
+          setShowRedisError(true);
         }
       } catch (error) {
         console.error('❌ Failed to check Redis health:', error);
@@ -512,11 +497,27 @@ export default function Home() {
     e.preventDefault();
     if (!taskInput.trim()) return;
 
-    // ✅ FIX: Check if Redis is running before submitting
+    // ✅ FIX: Check if Redis is running before submitting, try to start if not
     if (!redisRunning) {
-      setRedisErrorMessage('Cannot submit task: Redis server is not running. Please start Redis.');
-      setShowRedisError(true);
-      return;
+      console.log('⚠️ Redis not running, attempting to start before task submission...');
+      try {
+        const healthResponse = await fetch('/api/health/redis');
+        const healthData = await healthResponse.json();
+
+        if (!healthData.isRunning) {
+          setRedisErrorMessage('Cannot submit task: Redis server could not be started. Please start it manually with: brew services start redis');
+          setShowRedisError(true);
+          return;
+        }
+
+        // Redis started successfully
+        setRedisRunning(true);
+        setShowRedisError(false);
+      } catch (error) {
+        setRedisErrorMessage('Cannot submit task: Failed to check Redis status');
+        setShowRedisError(true);
+        return;
+      }
     }
 
     setIsSubmitting(true);
