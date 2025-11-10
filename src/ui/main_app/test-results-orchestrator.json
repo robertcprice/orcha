@@ -1,0 +1,28 @@
+{
+  "passed": [
+    "Particle canvas detected",
+    "Particle animation working",
+    "WebSocket connected"
+  ],
+  "failed": [
+    "Canvas component not found",
+    "Orchestrator root node missing",
+    "HybridOrchestratorPanel not found",
+    "Test execution error: locator.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('textarea[placeholder*=\"accomplish\"]').first()\u001b[22m\n"
+  ],
+  "warnings": [
+    "No additional agent nodes spawned",
+    "Mobile layout may have issues"
+  ],
+  "screenshots": [
+    "orchestrator-01-initial.png",
+    "orchestrator-03-agent-tree.png",
+    "orchestrator-04-status-states.png",
+    "orchestrator-05-mobile.png"
+  ],
+  "metrics": {
+    "wsConnections": 100,
+    "wsMessages": 101,
+    "status_error": 1
+  }
+}

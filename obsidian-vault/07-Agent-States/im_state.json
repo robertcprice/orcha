@@ -5,12 +5,13 @@
   "current_task": null,
   "planned_tasks": [],
   "stats": {
-    "total_tasks": 0,
-    "completed": 0,
+    "total_tasks": 1,
+    "completed": 1,
     "in_progress": 0,
     "failed": 0,
-    "success_rate": 0,
-    "last_active": null
+    "success_rate": 100,
+    "last_active": "2025-11-03T15:19:43.104378"
   },
-  "last_updated": "2025-10-22T00:15:14.014Z"
+  "last_updated": "2025-11-03T15:19:43.104469",
+  "status": "idle"
 }

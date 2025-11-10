@@ -1,0 +1,49 @@
+# Hybrid Orchestrator V5 - Dependencies
+
+# Core AI Libraries
+openai>=1.0.0              # OpenAI API (ChatGPT, Codex compatibility)
+anthropic>=0.8.0           # Claude API (if using direct API instead of CLI)
+google-generativeai>=0.3.0 # Google Gemini API
+
+# MCP (Model Context Protocol) for Codex (requires Python 3.10+)
+mcp>=0.1.0; python_version >= "3.10"  # MCP SDK
+
+# Async and Networking
+aiohttp>=3.9.0             # Async HTTP client
+httpx>=0.25.0              # Modern HTTP client
+asyncio>=3.4.3             # Async support
+
+# Redis for Event Publishing
+redis>=5.0.0               # Redis client
+aioredis>=2.0.1            # Async Redis
+
+# Data Handling
+pydantic>=2.0.0            # Data validation
+dataclasses-json>=0.6.0    # Dataclass JSON serialization
+
+# Utilities
+python-dotenv>=1.0.0       # Environment variable management
+click>=8.1.0               # CLI utilities
+rich>=13.0.0               # Terminal formatting
+colorama>=0.4.6            # Cross-platform colored terminal text
+
+# Testing
+pytest>=7.4.0              # Testing framework
+pytest-asyncio>=0.21.0     # Async testing support
+pytest-cov>=4.1.0          # Coverage reporting
+pytest-mock>=3.12.0        # Mocking support
+
+# Type Checking and Linting
+mypy>=1.7.0                # Static type checker
+black>=23.12.0             # Code formatter
+flake8>=6.1.0              # Linting
+isort>=5.13.0              # Import sorting
+
+# Documentation
+sphinx>=7.2.0              # Documentation generator
+sphinx-rtd-theme>=2.0.0    # ReadTheDocs theme
+
+# Optional: For enhanced features
+# playwright>=1.40.0       # Browser automation (for webapp testing skill)
+# pandas>=2.1.0            # Data manipulation
+# numpy>=1.26.0            # Numerical computing

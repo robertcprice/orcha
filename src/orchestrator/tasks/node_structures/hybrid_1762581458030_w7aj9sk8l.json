@@ -1,0 +1,17 @@
+{
+  "task_id": "hybrid_1762581458030_w7aj9sk8l",
+  "saved_at": "2025-11-08T06:05:14.269Z",
+  "nodes": [
+    {
+      "id": "orchestrator-root",
+      "name": "Hybrid Orchestrator",
+      "type": "orchestrator",
+      "status": "complete",
+      "x": 50,
+      "y": 25,
+      "layer": "orchestrator",
+      "depth": 1
+    }
+  ],
+  "connections": []
+}

@@ -1,0 +1,35 @@
+{
+  "task_id": "hybrid_1762614795169_kb1vm59i6",
+  "saved_at": "2025-11-08T15:13:23.010Z",
+  "nodes": [
+    {
+      "id": "orchestrator-root",
+      "name": "Hybrid Orchestrator",
+      "type": "orchestrator",
+      "status": "active",
+      "x": 50,
+      "y": 25,
+      "layer": "orchestrator",
+      "depth": 1,
+      "metadata": {}
+    },
+    {
+      "id": "PP:hybrid_1762614795169_kb1vm59i6",
+      "name": "PP",
+      "type": "PP",
+      "status": "planning",
+      "x": 50,
+      "y": 57,
+      "parentId": "orchestrator-root",
+      "layer": "agent",
+      "depth": 2,
+      "metadata": {}
+    }
+  ],
+  "connections": [
+    {
+      "from": "orchestrator-root",
+      "to": "PP:hybrid_1762614795169_kb1vm59i6"
+    }
+  ]
+}

@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gravity Flux - Platformer Game</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="game-container">
+        <canvas id="gameCanvas" width="1280" height="720"></canvas>
+        <div id="ui-overlay">
+            <div id="level-indicator">Level: <span id="current-level">1</span></div>
+            <div id="cooldown-indicator">
+                <div class="cooldown-bar">
+                    <div id="cooldown-fill" class="cooldown-fill"></div>
+                </div>
+                <span id="cooldown-text">Gravity Well Ready</span>
+            </div>
+            <div id="collectibles">Stars: <span id="stars-count">0</span>/<span id="stars-total">0</span></div>
+        </div>
+        <div id="menu-overlay" class="overlay active">
+            <div class="menu-content">
+                <h1>GRAVITY FLUX</h1>
+                <p class="subtitle">Manipulate gravity to navigate impossible platforms</p>
+                <div class="menu-buttons">
+                    <button id="start-button" class="menu-btn primary">Start Game</button>
+                    <button id="tutorial-button" class="menu-btn">How to Play</button>
+                </div>
+            </div>
+        </div>
+        <div id="tutorial-overlay" class="overlay">
+            <div class="menu-content">
+                <h2>How to Play</h2>
+                <div class="controls-info">
+                    <div class="control-item">
+                        <strong>Arrow Keys / WASD</strong>
+                        <p>Move left and right</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>Space</strong>
+                        <p>Jump (press twice for double jump)</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>Left Click</strong>
+                        <p>Create gravity well at cursor (pulls you toward it)</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>Right Click</strong>
+                        <p>Create repulsion well at cursor (pushes you away)</p>
+                    </div>
+                    <div class="control-item">
+                        <strong>R</strong>
+                        <p>Restart level</p>
+                    </div>
+                </div>
+                <div class="tutorial-tips">
+                    <h3>Tips:</h3>
+                    <ul>
+                        <li>Gravity wells have a 2-second cooldown</li>
+                        <li>You can have up to 2 wells active at once</li>
+                        <li>Chain wells together for complex maneuvers</li>
+                        <li>Collect all stars for bonus points!</li>
+                    </ul>
+                </div>
+                <button id="close-tutorial" class="menu-btn primary">Got It!</button>
+            </div>
+        </div>
+        <div id="pause-overlay" class="overlay">
+            <div class="menu-content">
+                <h2>Paused</h2>
+                <div class="menu-buttons">
+                    <button id="resume-button" class="menu-btn primary">Resume</button>
+                    <button id="restart-button" class="menu-btn">Restart Level</button>
+                    <button id="menu-button" class="menu-btn">Main Menu</button>
+                </div>
+            </div>
+        </div>
+        <div id="win-overlay" class="overlay">
+            <div class="menu-content">
+                <h2>Level Complete!</h2>
+                <p class="completion-stats">
+                    Stars Collected: <span id="win-stars">0</span>/<span id="win-total">0</span>
+                </p>
+                <div class="menu-buttons">
+                    <button id="next-level-button" class="menu-btn primary">Next Level</button>
+                    <button id="replay-button" class="menu-btn">Replay Level</button>
+                </div>
+            </div>
+        </div>
+        <div id="death-overlay" class="overlay">
+            <div class="menu-content">
+                <h2>Oops!</h2>
+                <p>Don't give up! Try again.</p>
+                <div class="menu-buttons">
+                    <button id="retry-button" class="menu-btn primary">Retry</button>
+                    <button id="death-menu-button" class="menu-btn">Main Menu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="js/physics.js"></script>
+    <script src="js/gravityWell.js"></script>
+    <script src="js/player.js"></script>
+    <script src="js/level.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/game.js"></script>
+</body>
+</html>

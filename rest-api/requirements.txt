@@ -1,0 +1,35 @@
+# REST API with Authentication - Dependencies
+
+# Web Framework
+fastapi>=0.104.0           # Modern async web framework
+uvicorn[standard]>=0.24.0  # ASGI server
+python-multipart>=0.0.6    # Form data parsing
+
+# Authentication & Security
+python-jose[cryptography]>=3.3.0  # JWT tokens
+passlib[bcrypt]>=1.7.4            # Password hashing
+python-dateutil>=2.8.2            # Date utilities
+
+# Database
+sqlalchemy>=2.0.0          # SQL toolkit and ORM
+alembic>=1.12.0            # Database migrations
+psycopg2-binary>=2.9.9     # PostgreSQL driver (can switch to SQLite for dev)
+
+# Data Validation
+pydantic>=2.5.0            # Data validation
+pydantic-settings>=2.1.0   # Settings management
+email-validator>=2.1.0     # Email validation
+
+# Utilities
+python-dotenv>=1.0.0       # Environment variables
+redis>=5.0.0               # Redis client
+
+# MCP Orchestration (parent project dependencies)
+# Note: Assumes parent orchestrator package is available
+
+# Testing
+pytest>=7.4.0              # Testing framework
+pytest-asyncio>=0.21.0     # Async testing
+httpx>=0.25.0              # Test client
+pytest-cov>=4.1.0          # Coverage
+faker>=20.1.0              # Test data generation

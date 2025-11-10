@@ -1,0 +1,18 @@
+{
+  "task_id": "offline_1762747817521_im3tk4",
+  "title": "Create a simple hello world program",
+  "description": "1. Analyze the task requirements\n2. Plan the implementation approach\n3. Implement the solution\n4. Test the implementation\n5. Document the code",
+  "priority": "normal",
+  "orchestrator_mode": "hybrid",
+  "created_at": "2025-11-10T04:10:17.521Z",
+  "created_by": "web-app",
+  "context": {},
+  "config": {
+    "max_dialogue_turns": 20,
+    "timeout_minutes": 60,
+    "gpt_model": "gpt-4o-mini",
+    "allow_sub_agents": true,
+    "max_agent_depth": 3
+  },
+  "status": "pending"
+}

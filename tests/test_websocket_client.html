@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebSocket Event Test - AI Orchestrator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Monaco', 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            border-bottom: 2px solid #60a5fa;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            background: linear-gradient(90deg, #60a5fa, #D2B48C);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #999;
+            font-size: 0.9em;
+        }
+
+        .status-bar {
+            display: flex;
+            justify-content: space-between;
+            background: rgba(96, 165, 250, 0.1);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 8px;
+            padding: 15px 20px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #ef4444;
+        }
+
+        .status-dot.connected {
+            background: #10b981;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: rgba(96, 165, 250, 0.2);
+            border: 1px solid rgba(96, 165, 250, 0.4);
+            border-radius: 8px;
+            color: #e0e0e0;
+            font-family: inherit;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background: rgba(96, 165, 250, 0.3);
+            box-shadow: 0 0 20px rgba(96, 165, 250, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .event-feed {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(210, 180, 140, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 500px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .event {
+            background: rgba(96, 165, 250, 0.05);
+            border-left: 3px solid #60a5fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-weight: bold;
+        }
+
+        .event-type {
+            color: #60a5fa;
+        }
+
+        .event-time {
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        .event-content {
+            color: #D2B48C;
+            margin-top: 8px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+
+        .event-source {
+            color: #10b981;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .no-events {
+            text-align: center;
+            color: #666;
+            padding: 50px 0;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>WebSocket Event Monitor</h1>
+            <p class="subtitle">Real-time AI Agent Event Streaming</p>
+        </header>
+
+        <div class="status-bar">
+            <div class="status-item">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="statusText">Disconnected</span>
+            </div>
+            <div class="status-item">
+                <span id="eventCount">Events: 0</span>
+            </div>
+            <div class="status-item">
+                <span id="uptime">Uptime: 0s</span>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button onclick="connectWS()">Connect</button>
+            <button onclick="disconnectWS()">Disconnect</button>
+            <button onclick="clearEvents()">Clear Events</button>
+            <button onclick="sendTestEvent()">Send Test Event</button>
+        </div>
+
+        <div class="event-feed" id="eventFeed">
+            <div class="no-events">Waiting for connection...</div>
+        </div>
+    </div>
+
+    <script>
+        let ws = null;
+        let eventCount = 0;
+        let startTime = null;
+
+        function updateStatus(connected) {
+            const dot = document.getElementById('statusDot');
+            const text = document.getElementById('statusText');
+
+            if (connected) {
+                dot.classList.add('connected');
+                text.textContent = 'Connected to ws://localhost:4000/ws';
+                text.style.color = '#10b981';
+                startTime = Date.now();
+                updateUptime();
+            } else {
+                dot.classList.remove('connected');
+                text.textContent = 'Disconnected';
+                text.style.color = '#ef4444';
+                startTime = null;
+            }
+        }
+
+        function updateUptime() {
+            if (!startTime) return;
+
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            document.getElementById('uptime').textContent = `Uptime: ${elapsed}s`;
+
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                setTimeout(updateUptime, 1000);
+            }
+        }
+
+        function connectWS() {
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                console.log('Already connected');
+                return;
+            }
+
+            console.log('Connecting to WebSocket...');
+            ws = new WebSocket('ws://localhost:4000/ws');
+
+            ws.onopen = () => {
+                console.log('WebSocket connected!');
+                updateStatus(true);
+            };
+
+            ws.onmessage = (event) => {
+                console.log('Received event:', event.data);
+                const data = JSON.parse(event.data);
+                addEvent(data);
+            };
+
+            ws.onerror = (error) => {
+                console.error('WebSocket error:', error);
+            };
+
+            ws.onclose = () => {
+                console.log('WebSocket disconnected');
+                updateStatus(false);
+            };
+        }
+
+        function disconnectWS() {
+            if (ws) {
+                ws.close();
+                ws = null;
+                updateStatus(false);
+            }
+        }
+
+        function addEvent(data) {
+            eventCount++;
+            document.getElementById('eventCount').textContent = `Events: ${eventCount}`;
+
+            const feed = document.getElementById('eventFeed');
+
+            // Remove "no events" message
+            const noEvents = feed.querySelector('.no-events');
+            if (noEvents) {
+                noEvents.remove();
+            }
+
+            // Create event element
+            const eventDiv = document.createElement('div');
+            eventDiv.className = 'event';
+
+            const time = new Date().toLocaleTimeString();
+            const eventType = data.type || data.event_type || 'unknown';
+            const eventData = data.data || data;
+            const source = eventData.source_app || eventData.agent_id || 'orchestrator';
+            const content = eventData.content || JSON.stringify(eventData, null, 2);
+
+            eventDiv.innerHTML = `
+                <div class="event-header">
+                    <span class="event-type">${eventType}</span>
+                    <span class="event-time">${time}</span>
+                </div>
+                <div class="event-source">Source: ${source}</div>
+                <div class="event-content">${content}</div>
+            `;
+
+            feed.insertBefore(eventDiv, feed.firstChild);
+
+            // Limit to 50 events
+            while (feed.children.length > 50) {
+                feed.removeChild(feed.lastChild);
+            }
+        }
+
+        function clearEvents() {
+            const feed = document.getElementById('eventFeed');
+            feed.innerHTML = '<div class="no-events">Event feed cleared</div>';
+            eventCount = 0;
+            document.getElementById('eventCount').textContent = 'Events: 0';
+        }
+
+        async function sendTestEvent() {
+            // Call the backend to publish a test event to Redis
+            const testEvent = {
+                type: 'test_event',
+                agent_id: 'web-test-client',
+                session_id: 'test-session-' + Date.now(),
+                content: 'Test event from WebSocket client HTML page',
+                data: {
+                    timestamp: new Date().toISOString(),
+                    test: true
+                }
+            };
+
+            // For now, just simulate receiving an event
+            // (In production, you'd make an API call to publish to Redis)
+            console.log('Simulating test event...');
+            addEvent({
+                type: 'info',
+                data: {
+                    content: 'Test event simulation (not published to Redis)',
+                    source_app: 'web-client',
+                    test: true
+                }
+            });
+        }
+
+        // Auto-connect on page load
+        window.onload = () => {
+            connectWS();
+        };
+    </script>
+</body>
+</html>

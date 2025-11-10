@@ -1,0 +1,8 @@
+Create a dark cyber brutalist style webpage with:
+- Dark color palette (blacks, dark greys, electric blues/purples)
+- Monospace fonts
+- Glitch effects
+- Terminal aesthetics
+- Matrix-style background
+- Responsive design
+- Pure HTML/CSS/JS (no frameworks)

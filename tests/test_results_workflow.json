@@ -1,0 +1,181 @@
+{
+  "summary": {
+    "total": 28,
+    "passed": 24,
+    "failed": 4,
+    "success_rate": 85.71428571428571,
+    "duration": 1.494537,
+    "start_time": "2025-11-07T00:22:37.958629",
+    "end_time": "2025-11-07T00:22:39.453166"
+  },
+  "tests": [
+    {
+      "test": "Python version",
+      "passed": true,
+      "details": "(v3.13)",
+      "timestamp": "2025-11-07T00:22:37.958675"
+    },
+    {
+      "test": "Directory orchestrator",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.958706"
+    },
+    {
+      "test": "Directory web-ui",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.958724"
+    },
+    {
+      "test": "Directory obsidian-vault",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.958741"
+    },
+    {
+      "test": "Environment variable OPENAI_API_KEY",
+      "passed": true,
+      "details": "(set)",
+      "timestamp": "2025-11-07T00:22:37.968152"
+    },
+    {
+      "test": "Environment variable ANTHROPIC_API_KEY",
+      "passed": false,
+      "details": "(not set)",
+      "timestamp": "2025-11-07T00:22:37.968162"
+    },
+    {
+      "test": "Import orchestrator.hybrid_orchestrator_v5.HybridOrchestratorV5",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995851"
+    },
+    {
+      "test": "Import orchestrator.hybrid_planner.HybridPlanner",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995862"
+    },
+    {
+      "test": "Import orchestrator.agent_dispatcher.AgentDispatcher",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995869"
+    },
+    {
+      "test": "Import orchestrator.script_executor.ScriptExecutor",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995875"
+    },
+    {
+      "test": "Import orchestrator.claude_code_agent.ClaudeCodeAgent",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995880"
+    },
+    {
+      "test": "Import orchestrator.gemini_agent.GeminiAgent",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995885"
+    },
+    {
+      "test": "Import orchestrator.best_practices.get_best_practices_db",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995890"
+    },
+    {
+      "test": "HybridPlanner initialization",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995953"
+    },
+    {
+      "test": "AgentDispatcher initialization",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995961"
+    },
+    {
+      "test": "ScriptExecutor initialization",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:37.995967"
+    },
+    {
+      "test": "Best Practices Database",
+      "passed": true,
+      "details": "(5 practices found)",
+      "timestamp": "2025-11-07T00:22:37.995983"
+    },
+    {
+      "test": "Route task 'Implement user authentication...'",
+      "passed": true,
+      "details": "(\u2192 codex)",
+      "timestamp": "2025-11-07T00:22:37.996003"
+    },
+    {
+      "test": "Route task 'Review and test the implementa...'",
+      "passed": false,
+      "details": "(expected claude, got codex)",
+      "timestamp": "2025-11-07T00:22:37.996013"
+    },
+    {
+      "test": "Route task 'Generate documentation...'",
+      "passed": true,
+      "details": "(\u2192 gemini)",
+      "timestamp": "2025-11-07T00:22:37.996022"
+    },
+    {
+      "test": "Script execution (echo)",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:38.006857"
+    },
+    {
+      "test": "Script execution (python)",
+      "passed": false,
+      "details": "(error: None)",
+      "timestamp": "2025-11-07T00:22:38.015271"
+    },
+    {
+      "test": "Redis event publishing",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:38.015651"
+    },
+    {
+      "test": "Obsidian vault exists",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:38.016423"
+    },
+    {
+      "test": "Obsidian Agents directory",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:38.016443"
+    },
+    {
+      "test": "Obsidian Projects directory",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:38.016455"
+    },
+    {
+      "test": "Obsidian Documentation directory",
+      "passed": true,
+      "details": "",
+      "timestamp": "2025-11-07T00:22:38.016470"
+    },
+    {
+      "test": "Simple workflow execution",
+      "passed": false,
+      "details": "(error: None)",
+      "timestamp": "2025-11-07T00:22:39.453135"
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "task_id": "orchestrator-root",
+  "title": "Orchestration Task",
+  "status": "completed",
+  "created_at": "2025-11-09T00:10:46.237Z",
+  "completed_at": "2025-11-09T00:10:46.237Z",
+  "tree_structure": {
+    "nodes": {
+      "planning-claude": {
+        "id": "planning-claude",
+        "name": "Claude",
+        "type": "planning",
+        "status": "idle",
+        "x": 10,
+        "y": 15,
+        "children": [],
+        "depth": 0,
+        "layer": "planning",
+        "metadata": {}
+      },
+      "planning-chatgpt": {
+        "id": "planning-chatgpt",
+        "name": "ChatGPT",
+        "type": "planning",
+        "status": "idle",
+        "x": 30,
+        "y": 15,
+        "children": [],
+        "depth": 0,
+        "layer": "planning",
+        "metadata": {}
+      },
+      "planning-deepseek": {
+        "id": "planning-deepseek",
+        "name": "DeepSeek",
+        "type": "planning",
+        "status": "idle",
+        "x": 50,
+        "y": 15,
+        "children": [],
+        "depth": 0,
+        "layer": "planning",
+        "metadata": {}
+      },
+      "planning-grok": {
+        "id": "planning-grok",
+        "name": "Grok",
+        "type": "planning",
+        "status": "idle",
+        "x": 70,
+        "y": 15,
+        "children": [],
+        "depth": 0,
+        "layer": "planning",
+        "metadata": {}
+      },
+      "planning-gemini": {
+        "id": "planning-gemini",
+        "name": "Gemini",
+        "type": "planning",
+        "status": "idle",
+        "x": 90,
+        "y": 15,
+        "children": [],
+        "depth": 0,
+        "layer": "planning",
+        "metadata": {}
+      },
+      "orchestrator-root": {
+        "id": "orchestrator-root",
+        "name": "Hybrid Orchestrator",
+        "type": "orchestrator",
+        "status": "idle",
+        "x": 50,
+        "y": 40,
+        "children": [],
+        "depth": 1,
+        "layer": "orchestrator",
+        "metadata": {}
+      }
+    },
+    "edges": [],
+    "layout": {
+      "width": 1200,
+      "height": 800
+    },
+    "capturedAt": "2025-11-09T00:33:54.425Z",
+    "title": "Orchestration Task"
+  }
+}

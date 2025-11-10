@@ -1,0 +1,209 @@
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Theme variables are set dynamically by ThemeContext */
+    /* Default to dark sci-fi for SSR */
+    --bg-primary: #0A0A0A;
+    --bg-secondary: #0F0F0F;
+    --bg-tertiary: #1A1A1A;
+    --text-primary: #FFFFFF;
+    --text-secondary: #A0A0A0;
+    --accent-primary: #00D9FF;
+    --font-primary: 'Rajdhani', system-ui, sans-serif;
+    --font-mono: 'Share Tech Mono', monospace;
+  }
+
+  * {
+    @apply border-[var(--glass-border)];
+  }
+
+  html {
+    font-family: var(--font-primary);
+  }
+
+  body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-primary);
+    transition: background-color var(--duration-normal) var(--easing-default),
+                color var(--duration-normal) var(--easing-default);
+  }
+
+  /* Ensure smooth transitions for all text */
+  h1, h2, h3, h4, h5, h6, p, span, div, a, button, input, textarea, select, label {
+    @apply transition-colors duration-[var(--duration-normal)];
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.3);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 255, 159, 0.5);
+    border-radius: 3px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(0, 255, 159, 0.7);
+  }
+
+  /* Gradient utilities */
+  .gradient-primary {
+    background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  }
+}
+
+/* Glass/Wireframe Panels */
+.glass-panel {
+  background: transparent;
+  backdrop-filter: none;
+  border: 1px solid var(--color-border);
+}
+
+.glass-button {
+  background: transparent;
+  backdrop-filter: none;
+  border: 1px solid var(--color-primary);
+  transition: all 0.3s ease;
+}
+
+.glass-button:hover {
+  background: rgba(0, 255, 159, 0.05);
+  box-shadow: 0 0 10px var(--color-primary-glow);
+  transform: translateY(-2px);
+}
+
+/* Hollow wireframe panels */
+.bg-secondary\/30,
+.bg-secondary\/50,
+.bg-background\/30,
+.bg-background\/50 {
+  background: transparent !important;
+  backdrop-filter: none !important;
+  border: 1px solid var(--color-border) !important;
+}
+
+.backdrop-blur-sm {
+  backdrop-filter: none !important;
+}
+
+/* Header nav buttons */
+.header-nav-button {
+  background: transparent !important;
+  border: 1px solid var(--color-border) !important;
+  transition: all 0.3s ease !important;
+}
+
+.header-nav-button:hover {
+  background: rgba(0, 255, 159, 0.05) !important;
+  border-color: var(--color-primary) !important;
+  box-shadow: 0 0 10px var(--color-primary-glow) !important;
+  transform: translateY(-2px);
+}
+
+/* Animations */
+@keyframes pulse-slow {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Theme-specific animations */
+@keyframes node-spawn {
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes node-pulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.05);
+    opacity: 1;
+  }
+}
+
+@keyframes flow-energy {
+  0% {
+    stroke-dashoffset: 1000;
+  }
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes glow-pulse {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px var(--accent-primary));
+  }
+  50% {
+    filter: drop-shadow(0 0 20px var(--accent-primary));
+  }
+}
+
+/* Scanline effect for sci-fi theme */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+[data-theme="scifi"] .scanline-effect::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(transparent, var(--accent-primary), transparent);
+  opacity: 0.1;
+  animation: scanline 8s linear infinite;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Glass panel styles */
+.glass-panel {
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: var(--panel-radius);
+  backdrop-filter: blur(var(--blur-md));
+}

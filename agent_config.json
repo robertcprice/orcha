@@ -1,0 +1,21 @@
+{
+  "primary_coder": "deepseek",
+  "fallback_chain": [
+    "claude",
+    "chatgpt"
+  ],
+  "review_agent": "claude",
+  "documentation_agent": "gemini",
+  "max_retries_per_agent": 3,
+  "enable_cost_tracking": true,
+  "enable_fallback": true,
+  "costs": {
+    "codex": 0.002,
+    "deepseek": 0.001,
+    "claude": 0.01,
+    "chatgpt": 0.003,
+    "gemini": 0.001,
+    "grok": 0.005
+  },
+  "verbose": true
+}
