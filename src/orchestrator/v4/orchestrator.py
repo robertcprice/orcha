@@ -252,14 +252,14 @@ class HybridOrchestratorV4:
             # Get information request from stage 1
             info_request = context.get("information_request")
             if info_request:
-                execution_plan = await self.chatgpt.create_execution_plan(
+                execution_plan = await self.chatgpt.create_plan(
                     user_goal=user_goal,
                     analysis_result=info_request,
                     context=context
                 )
             else:
                 # Fallback: create plan without detailed analysis
-                execution_plan = await self.chatgpt.create_execution_plan(
+                execution_plan = await self.chatgpt.create_plan(
                     user_goal=user_goal,
                     analysis_result=None,
                     context=context

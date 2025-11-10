@@ -499,11 +499,66 @@ async def main():
             max_design_iterations=max_iterations  # Use env var for planning iterations
         )
 
+        # Detect task complexity to determine if multi-AI planning is needed
+        def detect_task_complexity(task_description: str) -> bool:
+            """
+            Automatically detect if task is complex enough to warrant multi-AI planning.
+
+            Returns:
+                True for complex tasks (build apps, new features, architecture)
+                False for simple tasks (bug fixes, small updates)
+            """
+            task_lower = task_description.lower()
+
+            # Simple task indicators - skip multi-AI planning
+            simple_keywords = [
+                'fix bug', 'fix the bug', 'bug fix', 'hotfix',
+                'update', 'change', 'modify', 'adjust',
+                'typo', 'rename', 'refactor small',
+                'add comment', 'remove comment',
+                'simple feature', 'quick fix'
+            ]
+
+            # Complex task indicators - use multi-AI planning
+            complex_keywords = [
+                'build', 'create app', 'implement system',
+                'new feature', 'architecture', 'design',
+                'full implementation', 'complete solution',
+                'end-to-end', 'e2e', 'integration',
+                'comprehensive', 'production-ready'
+            ]
+
+            # Check for simple task patterns
+            for keyword in simple_keywords:
+                if keyword in task_lower:
+                    return False
+
+            # Check for complex task patterns
+            for keyword in complex_keywords:
+                if keyword in task_lower:
+                    return True
+
+            # Heuristic: longer descriptions usually = complex tasks
+            # Short tasks (< 50 chars) are usually simple
+            if len(task_description.strip()) < 50:
+                return False
+
+            # Default to simple planning for medium-length unclear tasks
+            # Only use multi-AI for clearly complex work
+            return False
+
+        # Decide whether to use multi-AI planning
+        use_multi_ai_planning = detect_task_complexity(goal)
+
+        if verbose:
+            complexity = "COMPLEX (multi-AI planning)" if use_multi_ai_planning else "SIMPLE (direct execution)"
+            print(f"📊 Task Complexity: {complexity}")
+
         # Execute with new modular architecture
         result = await orchestrator.run(
             user_goal=goal,
             context=context,
-            enable_multi_ai_planning=True  # Enable Stage 0 multi-AI planning
+            enable_multi_ai_planning=use_multi_ai_planning
         )
 
         # Extract results from IterativeExecutionResult object

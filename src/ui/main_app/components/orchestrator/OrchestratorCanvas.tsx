@@ -434,10 +434,9 @@ export default function OrchestratorCanvas({ onNodeClick, onActiveNodesChange, o
         const jitter = childIndex === 0 ? 0 :
                        (childIndex % 2 === 1 ? 1 : -1) * Math.ceil(childIndex / 2) * horizontalJitter;
 
-        // ✅ FIX: Read coordinates from backend if provided, otherwise fall back to calculated positions
-        const metadata = payload.meta || payload.data || eventData.meta || eventData.data || {};
-        let newX = metadata.x !== undefined ? metadata.x : parent.x + jitter;
-        let newY = metadata.y !== undefined ? metadata.y : baseY + (childIndex * verticalSpacing);
+        // Calculate positions relative to parent node
+        let newX = parent.x + jitter;
+        let newY = baseY + (childIndex * verticalSpacing);
 
         // ✅ FIX 2: Bounds checking - clamp positions to viewport
         newX = Math.max(5, Math.min(95, newX)); // Keep x between 5% and 95%
