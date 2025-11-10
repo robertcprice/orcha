@@ -457,41 +457,42 @@ export default function Home() {
   }, []);
 
   // ✅ FIX: Check WebSocket health and auto-start server if needed
-  useEffect(() => {
-    const checkWebSocketHealth = async () => {
-      try {
-        // Check if WebSocket server is responding
-        const response = await fetch('http://localhost:4000/events');
-        if (!response.ok) {
-          console.warn('⚠️ WebSocket server not responding, attempting to start...');
+  // DISABLED: WebSocket health checks - endpoint not implemented yet
+  // useEffect(() => {
+  //   const checkWebSocketHealth = async () => {
+  //     try {
+  //       // Check if WebSocket server is responding
+  //       const response = await fetch('http://localhost:4000/events');
+  //       if (!response.ok) {
+  //         console.warn('⚠️ WebSocket server not responding, attempting to start...');
 
-          // Try to start WebSocket server via API
-          const startResponse = await fetch('/api/health/websocket/start', { method: 'POST' });
-          if (startResponse.ok) {
-            console.log('✅ WebSocket server started');
-          } else {
-            console.error('❌ Failed to start WebSocket server');
-          }
-        }
-      } catch (error) {
-        console.warn('⚠️ WebSocket server not reachable, attempting to start...');
-        try {
-          const startResponse = await fetch('/api/health/websocket/start', { method: 'POST' });
-          if (startResponse.ok) {
-            console.log('✅ WebSocket server started');
-          }
-        } catch (e) {
-          console.error('❌ Failed to start WebSocket server:', e);
-        }
-      }
-    };
+  //         // Try to start WebSocket server via API
+  //         const startResponse = await fetch('/api/health/websocket/start', { method: 'POST' });
+  //         if (startResponse.ok) {
+  //           console.log('✅ WebSocket server started');
+  //         } else {
+  //           console.error('❌ Failed to start WebSocket server');
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.warn('⚠️ WebSocket server not reachable, attempting to start...');
+  //       try {
+  //         const startResponse = await fetch('/api/health/websocket/start', { method: 'POST' });
+  //         if (startResponse.ok) {
+  //           console.log('✅ WebSocket server started');
+  //         }
+  //       } catch (e) {
+  //         console.error('❌ Failed to start WebSocket server:', e);
+  //       }
+  //     }
+  //   };
 
-    checkWebSocketHealth();
+  //   checkWebSocketHealth();
 
-    // Re-check every 30 seconds
-    const interval = setInterval(checkWebSocketHealth, 30000);
-    return () => clearInterval(interval);
-  }, []);
+  //   // Re-check every 30 seconds
+  //   const interval = setInterval(checkWebSocketHealth, 30000);
+  //   return () => clearInterval(interval);
+  // }, []);
 
   const handleTaskSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
