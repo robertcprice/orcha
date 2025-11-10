@@ -618,7 +618,8 @@ export default function OrchestratorCanvas({ onNodeClick, onActiveNodesChange, o
     }
   }, [agents]);
 
-  useWebSocket({ onMessage: handleWebSocketMessage });
+  // DISABLED: WebSocket connection - server not running on port 4000
+  // useWebSocket({ onMessage: handleWebSocketMessage });
 
   // Update refs when callbacks change
   useEffect(() => {
