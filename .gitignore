@@ -5,6 +5,8 @@ node_modules/
 
 # Testing
 coverage/
+.test-dist/
+*.tsbuildinfo
 
 # Next.js
 .next/
@@ -48,9 +50,17 @@ __pycache__/
 *.so
 .Python
 venv/
+.venv/
 env/
 ENV/
 
 # Misc
 *.log
 .cache/
+
+# Redis stub (shadows real library)
+redis_stub/
+.playwright-mcp/
+dump.rdb
+test-results/
+.DS_Store
