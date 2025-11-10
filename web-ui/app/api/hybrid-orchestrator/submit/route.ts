@@ -27,16 +27,8 @@ export async function POST(request: NextRequest) {
 			);
 		}
 
-		if (!process.env.ANTHROPIC_API_KEY) {
-			return NextResponse.json(
-				{
-					success: false,
-					error: "ANTHROPIC_API_KEY not set",
-					message: "Please set ANTHROPIC_API_KEY environment variable before using the Hybrid Orchestrator. See hybrid_orchestrator_web_guide.md for instructions.",
-				},
-				{ status: 400 }
-			);
-		}
+		// Note: ANTHROPIC_API_KEY is optional - only needed if using Claude API directly instead of CLI
+		// The Python orchestrator will handle its absence gracefully
 
 		const { goal, context, maxTurns } = await request.json();
 
