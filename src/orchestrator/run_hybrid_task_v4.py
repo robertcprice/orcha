@@ -510,6 +510,23 @@ async def main():
             """
             task_lower = task_description.lower()
 
+            # Complex task indicators - use multi-AI planning (CHECK FIRST!)
+            # ✅ FIX: Check complex keywords BEFORE simple keywords to prioritize them
+            complex_keywords = [
+                'build', 'create app', 'implement system',
+                'new feature', 'architecture', 'design',
+                'full implementation', 'complete solution',
+                'end-to-end', 'e2e', 'integration',
+                'comprehensive', 'production-ready',
+                'todo app', 'todo list'  # Common complex patterns
+            ]
+
+            # Check for complex task patterns FIRST
+            for keyword in complex_keywords:
+                if keyword in task_lower:
+                    print(f"✅ Complex keyword detected: '{keyword}' in task")
+                    return True  # Return immediately, don't check length heuristic
+
             # Simple task indicators - skip multi-AI planning
             simple_keywords = [
                 'fix bug', 'fix the bug', 'bug fix', 'hotfix',
@@ -519,32 +536,21 @@ async def main():
                 'simple feature', 'quick fix'
             ]
 
-            # Complex task indicators - use multi-AI planning
-            complex_keywords = [
-                'build', 'create app', 'implement system',
-                'new feature', 'architecture', 'design',
-                'full implementation', 'complete solution',
-                'end-to-end', 'e2e', 'integration',
-                'comprehensive', 'production-ready'
-            ]
-
             # Check for simple task patterns
             for keyword in simple_keywords:
                 if keyword in task_lower:
+                    print(f"❌ Simple keyword detected: '{keyword}' in task")
                     return False
 
-            # Check for complex task patterns
-            for keyword in complex_keywords:
-                if keyword in task_lower:
-                    return True
-
             # Heuristic: longer descriptions usually = complex tasks
-            # Short tasks (< 50 chars) are usually simple
-            if len(task_description.strip()) < 50:
+            # Only apply if no keywords matched
+            if len(task_description.strip()) < 30:  # Reduced from 50 to 30
+                print(f"❌ Task too short ({len(task_description.strip())} chars) for unclear tasks")
                 return False
 
             # Default to simple planning for medium-length unclear tasks
             # Only use multi-AI for clearly complex work
+            print(f"❌ No clear complexity indicators, defaulting to simple")
             return False
 
         # Decide whether to use multi-AI planning

@@ -43,27 +43,58 @@ export async function POST(request: Request) {
     // Set expiry (24 hours)
     await redis.expire(`algomind.orchestrator.${taskId}`, 86400);
 
-    // Spawn orchestrator process
+    // ✅ FIX: Use run_hybrid_task_v4.py for multi-AI planning support
     const orchestratorScript = path.join(
       process.cwd(),
-      '..',
+      '../../..',
+      'src',
       'orchestrator',
-      'run_claude_orchestrator.py'
+      'run_hybrid_task_v4.py'
     );
 
-    const pythonProcess = spawn('python3', [
+    // ✅ FIX: Use virtual environment Python interpreter
+    const venvPython = path.join(
+      process.cwd(),
+      '../../..',
+      'venv',
+      'bin',
+      'python'
+    );
+
+    // ✅ DEBUG: Capture subprocess output to debug why nodes aren't appearing
+    const logFile = `/tmp/orchestrator-${taskId}.log`;
+    const fs = require('fs');
+
+    // Open log file synchronously to ensure fd is ready
+    const logFd = fs.openSync(logFile, 'a');
+
+    // ✅ FIX: Set working directory to project root for Python imports
+    const projectRoot = path.join(process.cwd(), '../../..');
+
+    const pythonProcess = spawn(venvPython, [
+      '-u',  // Unbuffered output so logs appear immediately
       orchestratorScript,
       '--task-id',
       taskId,
-      '--task',
+      '--goal',  // V4 uses --goal instead of --task
       task,
+      '--context',  // Pass empty context (task_id added in run_hybrid_task_v4.py)
+      '{}',
+      '--verbose',  // Enable verbose logging to see our debug logs
     ], {
+      cwd: projectRoot,  // Set working directory to project root
       detached: true,
-      stdio: 'ignore',
+      stdio: ['ignore', logFd, logFd],  // Capture stdout and stderr to log file
+      env: {
+        ...process.env,
+        PYTHONPATH: projectRoot,  // Set PYTHONPATH for module imports
+      },
     });
 
     // Detach the process so it runs independently
     pythonProcess.unref();
+
+    console.log(`[Orchestrator] Task ${taskId} logs: ${logFile}`);
 
     console.log(`[Orchestrator] Started task ${taskId}`);
 
