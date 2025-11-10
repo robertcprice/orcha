@@ -123,6 +123,7 @@ export default function OrchestratorCanvas({ onNodeClick, onActiveNodesChange, o
     // ✅ FIX: Filter out old events - only process events from active session
     // Don't auto-process events when no session is active (prevents replay of old events on page load)
     const isManagerEvent = hook_event_type?.includes('manager');
+    const isAgentSpawned = hook_event_type === 'agent_spawned';  // ✅ NEW: Allow agent_spawned events
     const isEnrichmentEvent = hook_event_type?.includes('enrichment');
     const isEnrichmentPipelineStarted = hook_event_type === 'enrichment_pipeline_started';
     const hasActiveSession = activeSessionIdRef.current !== null;
@@ -132,14 +133,14 @@ export default function OrchestratorCanvas({ onNodeClick, onActiveNodesChange, o
     const planId = payload?.plan_id || session_id;
     const isCurrentPlan = planId === activePlanIdRef.current;
 
-    // Only process if: 1) manager event OR 2) enrichment_pipeline_started OR 3) enrichment event from current plan OR 4) event matches active session
-    if (!isManagerEvent && !isEnrichmentPipelineStarted && !hasActiveSession) {
-      // No active session - only allow manager events and enrichment_pipeline_started
+    // Only process if: 1) manager event OR 2) agent_spawned OR 3) enrichment_pipeline_started OR 4) enrichment event from current plan OR 5) event matches active session
+    if (!isManagerEvent && !isAgentSpawned && !isEnrichmentPipelineStarted && !hasActiveSession) {
+      // No active session - only allow manager events, agent_spawned, and enrichment_pipeline_started
       return;
     }
 
-    if (!isManagerEvent && !isEnrichmentPipelineStarted && !isCurrentSession && !(isEnrichmentEvent && isCurrentPlan)) {
-      // Different session - ignore (allow manager events, enrichment_pipeline_started, and enrichment events from current plan)
+    if (!isManagerEvent && !isAgentSpawned && !isEnrichmentPipelineStarted && !isCurrentSession && !(isEnrichmentEvent && isCurrentPlan)) {
+      // Different session - ignore (allow manager events, agent_spawned, enrichment_pipeline_started, and enrichment events from current plan)
       console.log(`🚫 Ignoring event from different session: ${session_id} (active: ${activeSessionIdRef.current}, plan: ${activePlanIdRef.current})`);
       return;
     }

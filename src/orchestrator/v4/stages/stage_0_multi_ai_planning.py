@@ -5,6 +5,7 @@ Sequential multi-AI enrichment with automatic design refinement.
 """
 
 import os
+from dataclasses import asdict
 from pathlib import Path
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
@@ -125,7 +126,7 @@ class Stage0MultiAIPlanning(BaseStage):
             "confidence_score": enriched_plan.final_confidence_score,
             "risks_count": len(enriched_plan.risks_identified),
             "best_practices": enriched_plan.best_practices,
-            "execution_plan": enriched_plan.execution_plan,  # ChatGPT's structured plan
+            "execution_plan": asdict(enriched_plan.execution_plan) if enriched_plan.execution_plan else {},  # ✅ FIX: Convert ExecutionPlan to dict
             "structured_tasks": enriched_plan.structured_tasks  # Gemini's JSON task breakdown
         }
         stage.status = "completed"

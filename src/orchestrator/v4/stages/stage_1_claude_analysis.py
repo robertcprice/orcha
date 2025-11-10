@@ -5,11 +5,23 @@ Claude analyzes the user's goal and identifies what information is needed.
 """
 
 import json
+from dataclasses import is_dataclass, asdict
 from datetime import datetime, timezone
 from typing import Dict, Any, Optional
 from orchestrator.v4.stages.base_stage import BaseStage
 from orchestrator.v4.types import DialogueStage, IterativeExecutionResult, InformationRequest
 from orchestrator.claude_cli_executor import ClaudeCLIExecutor
+
+
+def _serialize_for_json(obj: Any) -> Any:
+    """Convert dataclasses and other non-JSON-serializable objects to dicts"""
+    if is_dataclass(obj) and not isinstance(obj, type):
+        return asdict(obj)
+    elif isinstance(obj, dict):
+        return {k: _serialize_for_json(v) for k, v in obj.items()}
+    elif isinstance(obj, (list, tuple)):
+        return [_serialize_for_json(item) for item in obj]
+    return obj
 
 
 class Stage1ClaudeAnalysis(BaseStage):
@@ -100,7 +112,7 @@ USER GOAL:
 {user_goal}
 
 ADDITIONAL CONTEXT:
-{json.dumps(context or {}, indent=2)}
+{json.dumps(_serialize_for_json(context or {}), indent=2)}
 
 YOUR TASK:
 1. Analyze the goal to understand what's being asked
