@@ -63,6 +63,12 @@ function normalizeEvent(raw: RawEvent): HookEvent {
     rawAgentId = `${aiName}-planner`; // Convert "Claude" → "claude-planner"
   }
 
+  // ✅ FIX: If still no agent_id, try using the 'agent' field (e.g., "CLAUDE", "CHATGPT")
+  if (!rawAgentId && (payload.agent || data.agent)) {
+    const agent = String(payload.agent || data.agent).toLowerCase();
+    rawAgentId = `${agent}-planner`; // Convert "CLAUDE" → "claude-planner"
+  }
+
   const normalizedAgentId = normalizeAgentId(rawAgentId);
 
   const sessionId =

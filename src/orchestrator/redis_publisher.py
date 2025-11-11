@@ -40,6 +40,7 @@ STRUCTURED_DATA_KEYS = [
     "response_data",
     "success",
     "error",
+    "plan_id",  # ✅ FIX: Add plan_id for frontend filtering
 ]
 
 
@@ -98,6 +99,13 @@ def _prepare_event_payload(event: Dict[str, Any]) -> Dict[str, Any]:
             existing_data.setdefault(key, payload.get(key))
 
     payload["data"] = existing_data
+
+    # ✅ FIX: Also set payload key for frontend compatibility (OrchestratorCanvas looks for both)
+    payload["payload"] = existing_data
+
+    # ✅ FIX: Ensure hook_event_type is set for frontend filtering
+    if "hook_event_type" not in payload and payload.get("type"):
+        payload["hook_event_type"] = payload["type"]
 
     return payload
 

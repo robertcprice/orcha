@@ -588,7 +588,7 @@ export default function Home() {
   };
 
   return (
-    <div className="relative w-full h-screen overflow-hidden" style={{ background: 'var(--bg-primary)' }}>
+    <div className="relative w-full h-screen overflow-hidden" style={{ background: 'transparent' }}>
       {/* Particle Background - Breathes and reacts to activity */}
       <ParticleBackground isActive={isTaskActive} activeNodes={activeNodes} particleColor={particleColor} />
 

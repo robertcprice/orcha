@@ -87,7 +87,8 @@ class HybridPlanner:
         gemini_api_key: Optional[str] = None,
         chatgpt_model: str = "gpt-4o",
         enable_best_practices: bool = True,
-        verbose: bool = True
+        verbose: bool = True,
+        agent_activity_callback: Optional[callable] = None
     ):
         """
         Initialize Hybrid Planner.
@@ -100,9 +101,11 @@ class HybridPlanner:
             chatgpt_model: ChatGPT model to use
             enable_best_practices: Whether to inject best practices
             verbose: Enable verbose logging
+            agent_activity_callback: Callback for agent activity events (for UI visualization)
         """
         self.verbose = verbose
         self.enable_best_practices = enable_best_practices
+        self.agent_activity_callback = agent_activity_callback
 
         # Initialize best practices database
         self.best_practices_db = get_best_practices_db() if enable_best_practices else None
@@ -153,12 +156,45 @@ class HybridPlanner:
         if self.verbose:
             print(f"[HybridPlanner] {message}")
 
+    async def _emit_spawn_event(self, agent_role: str, agent_label: str, plan_id: str = None, task_id: str = None):
+        """Emit spawn event for an AI agent node"""
+        # ✅ FIX: Publish agent_spawned event to Redis so frontend can create node
+        await publish_event({
+            "type": "agent_spawned",
+            "hook_event_type": "agent_spawned",
+            "plan_id": plan_id,
+            "session_id": task_id or plan_id,
+            "agent": agent_role,
+            "agent_label": agent_label,
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "payload": {
+                "agent": agent_role,
+                "agent_label": agent_label,
+                "plan_id": plan_id
+            }
+        })
+        self._log(f"📤 Published agent_spawned event for {agent_label}")
+
+        # Also call the callback if it exists (for compatibility)
+        if self.agent_activity_callback:
+            await self.agent_activity_callback(
+                agent_role=agent_role,
+                log_type="spawn",
+                message=f"{agent_label} starting analysis",
+                metadata={
+                    "agent_label": agent_label,
+                    "task": "Multi-AI Planning",
+                    "stage": "planning"
+                }
+            )
+
     async def enrich_plan(
         self,
         task_title: str,
         task_description: str,
         claude_plan: str,
-        context: Optional[Dict[str, Any]] = None
+        context: Optional[Dict[str, Any]] = None,
+        task_id: Optional[str] = None
     ) -> EnrichedPlan:
         """
         Run the full multi-AI enrichment pipeline.
@@ -168,6 +204,7 @@ class HybridPlanner:
             task_description: Detailed task description
             claude_plan: Claude's initial plan from plan mode
             context: Additional context
+            task_id: Task/session ID for event tracking
 
         Returns:
             EnrichedPlan with all AI contributions
@@ -178,11 +215,20 @@ class HybridPlanner:
         self._log(f"Starting Multi-AI Enrichment Pipeline for: {task_title}")
         self._log("=" * 60)
 
-        await publish_event({
+        # ✅ FIX: Include session_id (task_id) so frontend can track the plan
+        event_payload = {
             "type": "enrichment_pipeline_started",
             "plan_id": plan_id,
+            "session_id": task_id or plan_id,  # Use task_id if available, fallback to plan_id
             "task": task_title
-        })
+        }
+        await publish_event(event_payload)
+
+        # Debug logging to verify session_id is included
+        self._log(f"📤 Published enrichment_pipeline_started event:")
+        self._log(f"   plan_id: {event_payload['plan_id']}")
+        self._log(f"   session_id: {event_payload['session_id']}")
+        self._log(f"   task_id param: {task_id}")
 
         enrichments: List[EnrichmentContribution] = []
         conversation_history = []
@@ -190,6 +236,9 @@ class HybridPlanner:
         # Step 0: Claude's Initial Creative Analysis (FIRST AI - sets the foundation)
         self._log("\n📝 Step 0: Claude's Initial Creative Analysis (FIRST)")
         self._log("-" * 60)
+
+        # Emit spawn event for Claude
+        await self._emit_spawn_event("CLAUDE", "Claude (Creative Analysis)", plan_id, task_id)
 
         # ✅ ENHANCED: Create thorough analysis if claude_plan is minimal or just task verbatim
         # Claude should expand minimal requests and provide creative, detailed analysis
@@ -299,6 +348,9 @@ Based on this analysis, I recommend we proceed with a well-structured implementa
         # Step 1: ChatGPT Creates Structured Plan
         self._log("\n🤖 Step 1: ChatGPT - Creating Structured Execution Plan")
         self._log("-" * 60)
+
+        # Emit spawn event for ChatGPT
+        await self._emit_spawn_event("CHATGPT", "ChatGPT (Structured Plan)", plan_id, task_id)
 
         execution_plan = None
         if self.chatgpt:
@@ -419,6 +471,9 @@ Based on this analysis, I recommend we proceed with a well-structured implementa
         self._log("\n🧠 Step 2: DeepSeek - Technical Analysis & Insights")
         self._log("-" * 60)
 
+        # Emit spawn event for DeepSeek
+        await self._emit_spawn_event("DEEPSEEK", "DeepSeek (Technical Analysis)", plan_id, task_id)
+
         if self.deepseek:
             try:
                 deepseek_request = PlanEnrichmentRequest(
@@ -515,6 +570,9 @@ ChatGPT's Execution Plan:
         self._log("\n🌟 Step 3: Grok - Creative Review & Alternatives")
         self._log("-" * 60)
 
+        # Emit spawn event for Grok
+        await self._emit_spawn_event("GROK", "Grok (Critical Review)", plan_id, task_id)
+
         if self.grok:
             try:
                 grok_request = PlanReviewRequest(
@@ -573,6 +631,9 @@ Previous AI Contributions:
         # Step 4: Gemini Final Comprehensive Review
         self._log("\n💎 Step 4: Gemini - Final Comprehensive Review")
         self._log("-" * 60)
+
+        # Emit spawn event for Gemini
+        await self._emit_spawn_event("GEMINI", "Gemini (Final Assessment)", plan_id, task_id)
 
         final_confidence_score = 7.0  # Default
         if self.gemini:
